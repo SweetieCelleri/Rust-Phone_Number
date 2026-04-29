@@ -17,3 +17,15 @@ impl TrieNode {
 pub struct Trie {
     root: TrieNode,
 }
+
+impl Trie {
+    pub fn new() -> Self {
+        Trie {
+            root: TrieNode::new(),
+        }
+    }
+
+    pub fn root(&self) -> &TrieNode {
+        &self.root
+    }
+}

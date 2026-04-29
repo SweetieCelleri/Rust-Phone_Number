@@ -13,3 +13,7 @@ impl TrieNode {
         }
     }
 }
+
+pub struct Trie {
+    root: TrieNode,
+}

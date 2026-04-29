@@ -28,4 +28,13 @@ impl Trie {
     pub fn root(&self) -> &TrieNode {
         &self.root
     }
+    pub fn insert(&mut self, number: &str) {
+        let mut current = &mut self.root;
+        for ch in number.chars() {
+            current = current.children
+                .entry(ch)
+                .or_insert_with(TrieNode::new);
+        }
+        current.is_end = true;
+    }
 }

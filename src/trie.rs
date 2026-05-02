@@ -28,6 +28,7 @@ impl Trie {
     pub fn root(&self) -> &TrieNode {
         &self.root
     }
+    
     pub fn insert(&mut self, number: &str) {
         let mut current = &mut self.root;
         for ch in number.chars() {
@@ -37,8 +38,25 @@ impl Trie {
         }
         current.is_end = true;
     }
+
     pub fn collect_all(&self) -> Vec<String> {
         let mut results = Vec::new();
+        Self::collect_recursive(
+            &self.root,
+            String::new(),
+            &mut results
+        );
         results
     }
+
+    fn collect_recursive(
+        node: &TrieNode,
+        prefix: String,
+        results: &mut Vec<String>
+    ) {
+        if node.is_end {
+            results.push(prefix.clone());
+        }
+    }
+
 }

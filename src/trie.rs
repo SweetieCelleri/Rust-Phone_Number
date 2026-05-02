@@ -37,4 +37,8 @@ impl Trie {
         }
         current.is_end = true;
     }
+    pub fn collect_all(&self) -> Vec<String> {
+        let mut results = Vec::new();
+        results
+    }
 }

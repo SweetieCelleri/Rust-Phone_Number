@@ -72,3 +72,44 @@ impl Trie {
     }
 
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_trie_new_is_empty() {
+        let trie = Trie::new();
+        assert!(trie.root().children.is_empty());
+        assert!(!trie.root().is_end);
+    }
+
+    #[test]
+    fn test_insert_creates_nodes() {
+        let mut trie = Trie::new();
+        trie.insert("04");
+        let node_0 = trie.root().children.get(&'0')
+            .expect("noeud 0 absent");
+        let node_4 = node_0.children.get(&'4')
+            .expect("noeud 4 absent");
+        assert!(node_4.is_end);
+        assert!(!node_0.is_end);
+    }
+
+    #[test]
+    fn test_empty_trie_collect() {
+        let trie = Trie::new();
+        let results = trie.collect_all();
+        assert!(results.is_empty());
+    }
+
+    #[test]
+    fn test_collect_single_number() {
+        let mut trie = Trie::new();
+        trie.insert("0612345678");
+        let results = trie.collect_all();
+        assert_eq!(results, vec!["0612345678"]);
+    }
+
+
+}

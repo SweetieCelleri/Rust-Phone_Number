@@ -28,7 +28,7 @@ impl Trie {
     pub fn root(&self) -> &TrieNode {
         &self.root
     }
-    
+
     pub fn insert(&mut self, number: &str) {
         let mut current = &mut self.root;
         for ch in number.chars() {
@@ -56,6 +56,18 @@ impl Trie {
     ) {
         if node.is_end {
             results.push(prefix.clone());
+        }
+        let mut keys: Vec<char> =
+            node.children.keys().copied().collect();
+        keys.sort();
+        for ch in keys {
+            if let Some(child) = node.children.get(&ch) {
+                let mut new_prefix = prefix.clone();
+                new_prefix.push(ch);
+                Self::collect_recursive(
+                    child, new_prefix, results
+                );
+            }
         }
     }
 

@@ -70,7 +70,6 @@ impl Trie {
             }
         }
     }
-
 }
 
 #[cfg(test)]
@@ -111,5 +110,22 @@ mod tests {
         assert_eq!(results, vec!["0612345678"]);
     }
 
+    #[test]
+    fn test_collect_shared_prefix() {
+        let mut trie = Trie::new();
+        trie.insert("042");
+        trie.insert("043");
+        trie.insert("041");
+        let results = trie.collect_all();
+        assert_eq!(results, vec!["041", "042", "043"]);
+    }
 
+    #[test]
+    fn test_duplicate_insert() {
+        let mut trie = Trie::new();
+        trie.insert("0612");
+        trie.insert("0612");
+        let results = trie.collect_all();
+        assert_eq!(results.len(), 1);
+    }
 }

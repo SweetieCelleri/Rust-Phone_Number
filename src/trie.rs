@@ -6,6 +6,7 @@ use std::collections::HashMap;
 pub struct TrieNode {
     pub children: HashMap<char, TrieNode>,
     pub is_end: bool,
+    pub name: Option<String>,
 }
 
 impl TrieNode {
@@ -13,6 +14,7 @@ impl TrieNode {
         TrieNode {
             children: HashMap::new(),
             is_end: false,
+            name: None,
         }
     }
 }
@@ -36,7 +38,7 @@ impl Trie {
     }
 
     /// Insere un numero dans le trie.
-    pub fn insert(&mut self, number: &str) {
+    pub fn insert(&mut self, number: &str, name: &str) {
         let mut current = &mut self.root;
 
         for ch in number.chars() {
@@ -47,6 +49,7 @@ impl Trie {
         }
 
         current.is_end = true;
+        current.name = Some(name.to_string());
     }
 
     /// Renvoie tous les numeros stockes, tries.
@@ -73,6 +76,43 @@ impl Trie {
                 p.push(ch);
 
                 Self::collect_recursive(child, p, results);
+            }
+        }
+    }
+
+    pub fn to_plantuml(&self) -> String {
+        let mut result = String::new();
+
+        result.push_str("@startmindmap\n");
+
+        Self::build_puml(&self.root, 1, &mut result);
+
+        result.push_str("@endmindmap\n");
+
+        result
+    }
+
+    fn build_puml(node: &TrieNode, depth: usize, output: &mut String) {
+        let mut keys: Vec<char> = node.children.keys().copied().collect();
+        keys.sort();
+        
+        for ch in keys {
+            if let Some(child) = node.children.get(&ch) {
+                // étoiles selon profondeur
+                let stars = "*".repeat(depth);
+            
+                output.push_str(&format!("{} {}\n", stars, ch));
+            
+                // appel récursif
+                Self::build_puml(child, depth + 1, output);
+            
+                // si fin de numéro → ajouter le nom
+                if child.is_end {
+                    if let Some(name) = &child.name {
+                        let stars = "*".repeat(depth + 1);
+                        output.push_str(&format!("{} {}\n", stars, name));
+                    }
+                }
             }
         }
     }

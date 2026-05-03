@@ -18,7 +18,11 @@ fn main() {
 
     let output_path = format!(
         "graph/{}.puml",
-        input_path.split('/').last().unwrap().replace(".json", "")
+        input_path
+            .split('/')
+            .next_back()
+            .unwrap()
+            .replace(".json", "")
     );
 
     fs::write(&output_path, puml)

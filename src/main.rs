@@ -3,7 +3,9 @@ use rust_phone_number::trie::Trie;
 use std::fs;
 
 fn main() {
-    let contacts = load_contacts_from_file("data/01_simple.json")
+    let input_path = "data/04_common_parts.json";
+
+    let contacts = load_contacts_from_file(input_path)
         .expect("Failed to load contacts");
 
     let mut trie = Trie::new();
@@ -14,8 +16,13 @@ fn main() {
 
     let puml = trie.to_plantuml();
 
-    fs::write("graph/output.puml", puml)
+    let output_path = format!(
+        "graph/{}.puml",
+        input_path.split('/').last().unwrap().replace(".json", "")
+    );
+
+    fs::write(&output_path, puml)
         .expect("Failed to write file");
 
-    println!("File generated in graph/output.puml");
+    println!("File generated in {}", output_path);
 }

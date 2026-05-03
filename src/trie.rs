@@ -19,6 +19,12 @@ impl TrieNode {
     }
 }
 
+impl Default for TrieNode {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 /// Le trie complet.
 pub struct Trie {
     root: TrieNode,
@@ -45,7 +51,7 @@ impl Trie {
             current = current
                 .children
                 .entry(ch)
-                .or_insert_with(TrieNode::new);
+                .or_default();
         }
 
         current.is_end = true;
@@ -95,26 +101,27 @@ impl Trie {
     fn build_puml(node: &TrieNode, depth: usize, output: &mut String) {
         let mut keys: Vec<char> = node.children.keys().copied().collect();
         keys.sort();
-        
+
         for ch in keys {
             if let Some(child) = node.children.get(&ch) {
-                // étoiles selon profondeur
                 let stars = "*".repeat(depth);
-            
+
                 output.push_str(&format!("{} {}\n", stars, ch));
-            
-                // appel récursif
+
                 Self::build_puml(child, depth + 1, output);
-            
-                // si fin de numéro → ajouter le nom
-                if child.is_end {
-                    if let Some(name) = &child.name {
-                        let stars = "*".repeat(depth + 1);
-                        output.push_str(&format!("{} {}\n", stars, name));
-                    }
+
+                if child.is_end && let Some(name) = &child.name {
+                    let stars = "*".repeat(depth + 1);
+                    output.push_str(&format!("{} {}\n", stars, name));
                 }
             }
         }
+    }
+}
+
+impl Default for Trie {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -134,7 +141,7 @@ mod tests {
     fn test_insert_creates_nodes() {
         let mut trie = Trie::new();
 
-        trie.insert("04");
+        trie.insert("04", "test");
 
         let n0 = trie.root().children.get(&'0').unwrap();
         let n4 = n0.children.get(&'4').unwrap();
@@ -154,7 +161,7 @@ mod tests {
     fn test_collect_single_number() {
         let mut trie = Trie::new();
 
-        trie.insert("0612345678");
+        trie.insert("0612345678", "test");
 
         assert_eq!(trie.collect_all(), vec!["0612345678"]);
     }
@@ -163,9 +170,9 @@ mod tests {
     fn test_collect_shared_prefix() {
         let mut trie = Trie::new();
 
-        trie.insert("042");
-        trie.insert("043");
-        trie.insert("041");
+        trie.insert("042", "test1");
+        trie.insert("043", "test2");
+        trie.insert("041", "test3");
 
         assert_eq!(trie.collect_all(), vec!["041", "042", "043"]);
     }
@@ -174,8 +181,8 @@ mod tests {
     fn test_duplicate_insert() {
         let mut trie = Trie::new();
 
-        trie.insert("0612");
-        trie.insert("0612");
+        trie.insert("0612", "test");
+        trie.insert("0612", "test");
 
         assert_eq!(trie.collect_all().len(), 1);
     }

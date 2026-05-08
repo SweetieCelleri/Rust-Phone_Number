@@ -1,12 +1,11 @@
 use rust_phone_number::parser::load_contacts_from_file;
 use rust_phone_number::trie::Trie;
-use std::fs;
+use std::error::Error;
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
     let input_path = "data/04_common_parts.json";
 
-    let contacts = load_contacts_from_file(input_path)
-        .expect("Failed to load contacts");
+    let contacts = load_contacts_from_file(input_path)?;
 
     let mut trie = Trie::new();
 
@@ -16,17 +15,15 @@ fn main() {
 
     let puml = trie.to_plantuml();
 
-    let output_path = format!(
-        "graph/{}.puml",
-        input_path
-            .split('/')
-            .next_back()
-            .unwrap()
-            .replace(".json", "")
-    );
+    let stem = std::path::Path::new(input_path)
+        .file_stem()
+        .and_then(|s| s.to_str())
+        .ok_or("nom de fichier invalide")?;
+    let output_path = format!("graph/{}.puml", stem);
 
-    fs::write(&output_path, puml)
-        .expect("Failed to write file");
+    std::fs::write(&output_path, puml)?;
 
-    println!("File generated in {}", output_path);
+    println!("Fichier généré : {}", output_path);
+
+    Ok(())
 }

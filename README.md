@@ -32,3 +32,7 @@ Visualisation
 -------------
 
 Les fichiers PlantUML dans `graph/` montrent des représentations des tries construits à partir des exemples. Pour générer les images, utilisez PlantUML (ou un plugin IDE).
+
+
+
+*Mention : L’IA générative a servi de support pour l’aide au code et au debugage.*

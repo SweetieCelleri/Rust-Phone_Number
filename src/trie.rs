@@ -48,10 +48,7 @@ impl Trie {
         let mut current = &mut self.root;
 
         for ch in number.chars() {
-            current = current
-                .children
-                .entry(ch)
-                .or_default();
+            current = current.children.entry(ch).or_default();
         }
 
         current.is_end = true;
@@ -62,15 +59,15 @@ impl Trie {
     pub fn collect_all(&self) -> Vec<String> {
         let mut results = Vec::new();
 
-        Self::collect_recursive(&self.root, String::new(), &mut results);
+        Self::collect_recursive(&self.root, "", &mut results);
 
         results
     }
 
     /// Parcours recursif en profondeur (DFS).
-    fn collect_recursive(node: &TrieNode, prefix: String, results: &mut Vec<String>) {
+    fn collect_recursive(node: &TrieNode, prefix: &str, results: &mut Vec<String>) {
         if node.is_end {
-            results.push(prefix.clone());
+            results.push(prefix.to_string());
         }
 
         let mut keys: Vec<char> = node.children.keys().copied().collect();
@@ -78,10 +75,10 @@ impl Trie {
 
         for ch in keys {
             if let Some(child) = node.children.get(&ch) {
-                let mut p = prefix.clone();
+                let mut p = prefix.to_string();
                 p.push(ch);
 
-                Self::collect_recursive(child, p, results);
+                Self::collect_recursive(child, &p, results);
             }
         }
     }
@@ -101,16 +98,18 @@ impl Trie {
     fn build_puml(node: &TrieNode, depth: usize, output: &mut String) {
         let mut keys: Vec<char> = node.children.keys().copied().collect();
         keys.sort();
-
+        
         for ch in keys {
             if let Some(child) = node.children.get(&ch) {
                 let stars = "*".repeat(depth);
-
+            
                 output.push_str(&format!("{} {}\n", stars, ch));
-
+            
                 Self::build_puml(child, depth + 1, output);
-
-                if child.is_end && let Some(name) = &child.name {
+            
+                let name_to_display = if child.is_end { child.name.as_ref() } else { None };
+            
+                if let Some(name) = name_to_display {
                     let stars = "*".repeat(depth + 1);
                     output.push_str(&format!("{} {}\n", stars, name));
                 }
